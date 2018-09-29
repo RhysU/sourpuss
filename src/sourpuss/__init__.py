@@ -22,7 +22,6 @@ import pandas
 # TODO Revisit some of the kid_gloves_off limits
 # TODO Naturally indexed check might consider the name
 # TODO Convert all column names to strings
-# TODO Permit providing a buffer to main defaulting to sys.stdout
 
 
 # What types of paths can we hope to load successfully?
@@ -61,6 +60,7 @@ def main(
         file: typing.List[str],
         *,
         append_index: typing.Sequence[str] = None,
+        buffer: typing.Any = None,  # Not a click.option
         csv: typing.Optional[bool] = None,
         no_index: typing.Optional[bool] = None,
         location: typing.Optional[bool] = None,
@@ -72,6 +72,9 @@ def main(
         types: typing.Optional[bool] = None
 ):
     """Cat Python pickle file(s) onto standard output, especially DataFrames."""
+    # To which buffer is the output going?  Primarily present to aid testing.
+    buffer = sys.stdout if buffer is None else buffer
+
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
         for f in file:
             # Load the pickle into a DataFrame, coercing if possible
@@ -98,11 +101,11 @@ def main(
 
             # Emit output in the desired format
             if csv:
-                df.to_csv(sys.stdout, index=not no_index)
+                df.to_csv(buffer, index=not no_index)
             else:
-                df.to_string(sys.stdout, index=not no_index)
+                df.to_string(buffer, index=not no_index)
                 if not df.empty:
-                    sys.stdout.write(os.linesep)
+                    buffer.write(os.linesep)
 
 
 def kid_gloves_off(
