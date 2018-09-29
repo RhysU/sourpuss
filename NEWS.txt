@@ -1,5 +1,12 @@
 News
 ====
+0.2
+---
+
+*Release date: 29-Sep-2018*
+
+* Support for a broader collection of types, including testing.
+* Suppress uninteresting RangeIndex by default in output.
 
 0.1
 ---
