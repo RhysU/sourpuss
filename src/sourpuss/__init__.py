@@ -39,6 +39,8 @@ DEFAULT_PRECISION = 17
               help='Change precision for floating point.')
 @click.option('--query', '-q', type=str, metavar='QUERY',
               help='Show only rows satisfying a query.')
+@click.option('--reset-index', '-r', type=str, multiple=True,
+              help='Remove named column from the index.')
 @click.option('--sort', '-s', is_flag=True,
               help='Sort according to the index.')
 @click.option('--types', '-t', is_flag=True,
@@ -52,6 +54,7 @@ def main(
         multi_sparse: typing.Optional[bool] = None,
         precision: typing.Optional[int] = None,
         query: typing.Optional[str] = None,
+        reset_index: typing.Sequence[str] = None,
         sort: typing.Optional[bool] = None,
         types: typing.Optional[bool] = None
 ):
@@ -69,6 +72,8 @@ def main(
             if types:
                 df = (df.applymap(type)
                       .applymap(operator.attrgetter('__name__')))
+            for r in reset_index:
+                df = df.reset_index(level=r, drop=False)
             if sort:
                 df = df.sort_index(axis=0, kind='mergesort')
 
