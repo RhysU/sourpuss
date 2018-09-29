@@ -17,10 +17,6 @@ import numpy
 import pandas
 
 # TODO Maintain uniform output structure on empty DataFrames
-# TODO Handle a wider variety of pickles:
-# TODO     Specifically, test/float.pkl
-# TODO     Specifically, test/list.pkl
-# TODO     Specifically, test/tuple.pkl
 # TODO Consider providing a describe summarizer
 # TODO Consider providing a quantiles summarizer
 # TODO Revisit some of the kid_gloves_off limits

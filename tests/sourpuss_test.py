@@ -4,6 +4,7 @@
 import io
 import textwrap
 
+import numpy
 import pandas
 import pytest
 
@@ -26,9 +27,40 @@ def data_basic():
     """)))
 
 
+def data_series():
+    return data_basic()['name']
+
+
+def data_list():
+    return [1, 2, 3, 4]
+
+
+def data_tuple():
+    return 1, 2, 3
+
+
+def data_dict():
+    return dict(a=5, b=[1, 2, 3], c=7.0, d=None)
+
+
+def data_dict():
+    return dict(a=5, b=[1, 2, 3], c=7.0, d=None)
+
+
+def data_array():
+    return numpy.random.random((5, 5))
+
+
+# Both non-empty and empty cases for various types
 @pytest.mark.parametrize("data", [
-    data_basic()
+    data_basic(), pandas.DataFrame(),
+    data_series(), pandas.Series(),
+    data_list(), list(),
+    data_tuple(), tuple(),
+    data_dict(), dict(),
+    data_array(), numpy.array([]),
 ])
 def test_coerce(data):
+    """Confirm coercion produces a DataFrame"""
     result = sourpuss.coerce_to_df(data)
     assert isinstance(result, pandas.DataFrame)
