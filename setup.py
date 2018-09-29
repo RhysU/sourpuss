@@ -7,7 +7,7 @@ README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 setup(name='sourpuss',
-      version='0.2',
+      version='0.3',
       description="Like feeding pickles to a cat(1)",
       long_description=README + '\n\n' + NEWS,
       classifiers=[
