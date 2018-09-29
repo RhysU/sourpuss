@@ -37,7 +37,7 @@ DEFAULT_PRECISION = 17
 @click.command()
 @click.argument('file', nargs=-1, type=PicklePath)
 @click.option('--append-index', '-a', type=str, multiple=True,
-              help='Append named column to the index.')
+              metavar='COLUMN', help='Append named column to the index.')
 @click.option('--csv', '-c', is_flag=True,
               help='Emit CSV instead of formatted table.')
 @click.option('--location', '-l', is_flag=True,
@@ -48,11 +48,11 @@ DEFAULT_PRECISION = 17
               help='Do not display the index.')
 @click.option('--precision', '-p', type=click.IntRange(min=1, max=None),
               show_default=True, metavar='DIGITS', default=DEFAULT_PRECISION,
-              help='Change precision for floating point.')
+              help='Set precision for floating point.')
 @click.option('--query', '-q', type=str, metavar='QUERY',
               help='Show only rows satisfying a query.')
 @click.option('--reset-index', '-r', type=str, multiple=True,
-              help='Remove named column from the index.')
+              metavar='LEVEL', help='Remove named level from the index.')
 @click.option('--sort-index', '-s', is_flag=True,
               help='Sort according to the index.')
 @click.option('--types', '-t', is_flag=True,
