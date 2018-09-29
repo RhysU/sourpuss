@@ -1,11 +1,9 @@
-*.pyc
-
-.installed.cfg
 bin
-develop-eggs
-
-*.egg-info
-
-tmp
 build
+develop-eggs
 dist
+*.egg-info
+.idea
+.installed.cfg
+*.pyc
+tmp
