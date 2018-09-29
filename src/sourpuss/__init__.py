@@ -84,8 +84,9 @@ def main(
                 df.insert(loc=0, column='location', value=f)
 
             # Possibly transform the index
-            for a in append_index:
-                df = df.set_index(a, append=True)
+            if append_index:
+                df = df.set_index(keys=list(append_index),
+                                  append=not naturally_indexed(df))
             for r in reset_index:
                 df = df.reset_index(level=r, drop=False)
             if sort_index:
@@ -119,6 +120,12 @@ def kid_gloves_off(
         'display.show_dimensions', False,
         'display.width', None,
     )
+
+
+# Surely there must be a better way...?
+def naturally_indexed(df: pandas.DataFrame) -> bool:
+    "Is the DataFrame index indistinguishable from just numbering the rows?"""
+    return (df.index == pandas.RangeIndex(start=0, stop=len(df))).all()
 
 
 if __name__ == '__main__':
