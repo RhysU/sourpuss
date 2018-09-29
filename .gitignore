@@ -7,4 +7,5 @@ dist
 .idea
 .installed.cfg
 *.pyc
+*.sw[po]
 tmp
