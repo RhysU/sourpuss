@@ -26,6 +26,7 @@ import pandas
 # TODO Revisit some of the kid_gloves_off limits
 # TODO Naturally indexed check might consider the name
 # TODO Convert all column names to strings
+# TODO Permit providing a buffer to main defaulting to sys.stdout
 
 
 # What types of paths can we hope to load successfully?
@@ -78,16 +79,8 @@ def main(
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
         for f in file:
             # Load the pickle into a DataFrame, coercing if possible
-            df = pandas.read_pickle(f)
-            if isinstance(df, pandas.Series):
-                df = df.to_frame()
-            if not isinstance(df, pandas.DataFrame):
-                try:
-                    df = list(df.items())
-                except AttributeError:
-                    pass
-                df = numpy.asanyarray(df)
-                df = pandas.DataFrame(df)
+            o = pandas.read_pickle(f)
+            df = coerce_to_df(o)
 
             # Possibly transform the data
             if query is not None:
@@ -135,6 +128,40 @@ def kid_gloves_off(
         'display.show_dimensions', False,
         'display.width', None,
     )
+
+
+def coerce_to_df(o: typing.Any) -> pandas.DataFrame:
+    """Coerce anything sensible into a DataFrame or else die trying."""
+    # Degenerate
+    if o is None:
+        return pandas.DataFrame()
+
+    # Identity
+    if isinstance(o, pandas.DataFrame):
+        return o
+
+    # Upgrade
+    if isinstance(o, pandas.Series):
+        return o.to_frame()
+
+    # Coerce by applying a sequence of transformations
+    type_incoming = type(o).__name__
+    try:
+        # Coerce dict-likes into 2D lists-of-tuples
+        try:
+            o = list(o.items())
+        except AttributeError:
+            pass
+
+        # Coerce anything into a NumPy array
+        o = numpy.asanyarray(o)
+
+        # NumPy arrays turn nicely into DataFrames
+        return pandas.DataFrame(o)
+    except:
+        raise RuntimeError("Failed to coerce type '{}'".format(type_incoming))
+
+    assert False, "Unreachable"
 
 
 # Surely there must be a better way...?
