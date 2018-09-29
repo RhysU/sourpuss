@@ -4,11 +4,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Cat Python pickle file(s) onto standard output, especially DataFrames.
 
-More concretely, display one or more pickle files on standard output
-allowing a host of simple transformations along the way.  Intended for
-when you're grooving on the command line and want to avoid firing
-up Jupyter/IPython.  Or maybe you like pipelines.  Or maybe you hate
-pipelines but Knuth-vs-McIlroy 1986 lives large in your memory."""
+More concretely, display one or more pickle files on standard output allowing
+a host of simple transformations along the way.  Intended for when you're
+grooving in the $SHELL  and want to avoid firing up Jupyter/IPython."""
 import operator
 import os
 import sys
