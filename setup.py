@@ -30,9 +30,15 @@ setup(name='sourpuss',
       include_package_data=True,
       zip_safe=False,
       test_suite="tests",
-      install_requires = [
+      setup_requires=[
+          'pytest-runner',
+      ],
+      install_requires=[
           'click',
           'pandas',
+      ],
+      tests_require=[
+          'pytest',
       ],
       entry_points={'console_scripts': ['sourpuss=sourpuss:main']},
       )
