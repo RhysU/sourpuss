@@ -2,12 +2,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import os
+import sys
 import typing
 
 import click
 import pandas
 
-# TODO Suppress a trivial range index
+# TODO Handle non-DataFrame pickles
+# TODO Suppress an index
 # TODO Add a path prefix as an index element
 # TODO Accept a directory and recursively dump pickles
 # TODO Convert all entries in the DataFrame into types via type(...)
@@ -44,7 +47,13 @@ def main(
 
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
         for f in file:
-            print(f)
+            df = pandas.read_pickle(f)
+            if csv:
+                df.to_csv(sys.stdout)
+            else:
+                df.to_string(sys.stdout)
+                if not df.empty:
+                    sys.stdout.write(os.linesep)
 
 
 def kid_gloves_off(
