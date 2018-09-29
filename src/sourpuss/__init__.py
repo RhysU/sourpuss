@@ -70,64 +70,24 @@ def main(
         reset_index: typing.Sequence[str] = None,
         sort_index: typing.Optional[bool] = None,
         types: typing.Optional[bool] = None
-):
+) -> None:
     """Cat Python pickle file(s) onto standard output, especially DataFrames."""
-    # To which buffer is the output going?  Primarily present to aid testing.
-    buffer = sys.stdout if buffer is None else buffer
-
-    with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
-        for f in file:
-            # Load the pickle into a DataFrame, coercing if possible
-            o = pandas.read_pickle(f)
-            df = coerce_to_df(o)
-
-            # Possibly transform the data
-            if query is not None:
-                df = df.query(query)
-            if types:
-                df = (df.applymap(type)
-                      .applymap(operator.attrgetter('__name__')))
-            if location:
-                df.insert(loc=0, column='location', value=f)
-
-            # Possibly transform the index
-            for r in reset_index:
-                df = df.reset_index(level=r, drop=False)
-            if append_index:
-                df = df.set_index(keys=list(append_index),
-                                  append=not naturally_indexed(df))
-            if sort_index:
-                df = df.sort_index(axis=0, kind='mergesort')
-
-            # Emit output in the desired format with an index iff interesting
-            index = not (no_index or naturally_indexed(df))
-            if csv:
-                df.to_csv(buffer, index=index)
-            else:
-                df.to_string(buffer, index=index)
-                if not df.empty:
-                    buffer.write(os.linesep)
-
-
-def kid_gloves_off(
-        multi_sparse: typing.Optional[bool] = None,
-        precision: typing.Optional[int] = None,
-) -> pandas.option_context:
-    """Like, seriously, Pandas just give me the entirety of my data."""
-    return pandas.option_context(
-        'display.date_yearfirst', True,
-        'display.expand_frame_repr', True,
-        'display.max_categories', 1024,
-        'display.max_columns', None,
-        'display.max_colwidth', 1024,
-        'display.max_rows', None,
-        'display.max_seq_items', None,
-        'display.multi_sparse', bool(multi_sparse),
-        'display.precision', (precision if precision is not None
-                              else DEFAULT_PRECISION),
-        'display.show_dimensions', False,
-        'display.width', None,
-    )
+    for f in file:
+        o = pandas.read_pickle(f)
+        df = coerce_to_df(o)
+        df = transform_data(df, query=query, types=types)
+        if location:
+            df.insert(loc=0, column='location', value=f)
+        df = transform_index(df,
+                             append_index=append_index,
+                             reset_index=reset_index,
+                             sort_index=sort_index)
+        emit_output(df,
+                    buffer=buffer,
+                    csv=csv,
+                    no_index=no_index,
+                    multi_sparse=multi_sparse,
+                    precision=precision)
 
 
 def coerce_to_df(o: typing.Any) -> pandas.DataFrame:
@@ -164,11 +124,87 @@ def coerce_to_df(o: typing.Any) -> pandas.DataFrame:
     assert False, "Unreachable"
 
 
+def transform_data(
+        df: pandas.DataFrame,
+        *,
+        query: typing.Optional[str] = None,
+        types: typing.Optional[bool] = None
+) -> pandas.DataFrame:
+    """Apply possible sequence of data transformations."""
+    if query is not None:
+        df = df.query(query)
+    if types:
+        df = (df.applymap(type)
+              .applymap(operator.attrgetter('__name__')))
+    return df
+
+
+def transform_index(
+        df: pandas.DataFrame,
+        *,
+        append_index: typing.Sequence[str] = None,
+        reset_index: typing.Sequence[str] = None,
+        sort_index: typing.Optional[bool] = None
+) -> pandas.DataFrame:
+    """Apply possible sequence of index transformations."""
+    for r in reset_index:
+        df = df.reset_index(level=r, drop=False)
+    if append_index:
+        df = df.set_index(keys=list(append_index),
+                          append=not naturally_indexed(df))
+    if sort_index:
+        df = df.sort_index(axis=0, kind='mergesort')
+    return df
+
+
 # Surely there must be a better way...?
 def naturally_indexed(df: pandas.DataFrame) -> bool:
     "Is the DataFrame index indistinguishable from just numbering the rows?"""
     return ((not df.index.name) and
             (df.index == pandas.RangeIndex(start=0, stop=len(df))).all())
+
+
+def emit_output(
+        df: pandas.DataFrame,
+        *,
+        buffer: typing.Any = None,
+        csv: typing.Optional[bool] = None,
+        no_index: typing.Optional[bool] = None,
+        multi_sparse: typing.Optional[bool] = None,
+        precision: typing.Optional[int] = None
+) -> None:
+    """Output the DataFrame to the specified buffer with desired formatting.."""
+    buffer = sys.stdout if buffer is None else buffer
+
+    with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
+        index = not (no_index or naturally_indexed(df))
+        if csv:
+            df.to_csv(buffer, index=index)
+        else:
+            df.to_string(buffer, index=index)
+            if not df.empty:
+                buffer.write(os.linesep)
+
+
+def kid_gloves_off(
+        multi_sparse: typing.Optional[bool] = None,
+        precision: typing.Optional[int] = None,
+) -> pandas.option_context:
+    """Like, seriously, Pandas just give me the entirety of my data."""
+    return pandas.option_context(
+        'display.date_yearfirst', True,
+        'display.expand_frame_repr', True,
+        'display.max_categories', 65536,
+        'display.max_columns', None,
+        'display.max_colwidth', 65536,
+        'display.max_rows', None,
+        'display.max_seq_items', None,
+        'display.multi_sparse', bool(multi_sparse),
+        'display.precision', (precision if precision is not None
+                              else DEFAULT_PRECISION),
+        'display.show_dimensions', False,
+        'display.width', None,
+    )
 
 
 if __name__ == '__main__':
