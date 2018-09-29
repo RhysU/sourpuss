@@ -15,13 +15,11 @@ import sys
 import typing
 
 import click
+import numpy
 import pandas
 
 # TODO Maintain uniform output structure on empty DataFrames
 # TODO Handle a wider variety of pickles:
-# TODO     Specifically, test/array.pkl
-# TODO     Specifically, test/dict.pkl
-# TODO     Specifically, test/float.pkl
 # TODO     Specifically, test/float.pkl
 # TODO     Specifically, test/list.pkl
 # TODO     Specifically, test/tuple.pkl
@@ -29,6 +27,7 @@ import pandas
 # TODO Consider providing a quantiles summarizer
 # TODO Revisit some of the kid_gloves_off limits
 # TODO Naturally indexed check might consider the name
+# TODO Convert all column names to strings
 
 
 # What types of paths can we hope to load successfully?
@@ -80,10 +79,17 @@ def main(
     """Cat Python pickle file(s) onto standard output, especially DataFrames."""
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
         for f in file:
-            # Load the pickle into a DataFrame
+            # Load the pickle into a DataFrame, coercing if possible
             df = pandas.read_pickle(f)
             if isinstance(df, pandas.Series):
                 df = df.to_frame()
+            if not isinstance(df, pandas.DataFrame):
+                try:
+                    df = list(df.items())
+                except AttributeError:
+                    pass
+                df = numpy.asanyarray(df)
+                df = pandas.DataFrame(df)
 
             # Possibly transform the data
             if query is not None:
