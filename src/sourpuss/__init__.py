@@ -17,7 +17,10 @@ import typing
 import click
 import pandas
 
+# TODO Maintain uniform output structure on empty DataFrames
 # TODO Handle non-DataFrame pickles
+# TODO Consider providing a describe summarizer
+# TODO Consider providing a quantiles summarizer
 
 
 # What types of paths can we hope to load successfully?
