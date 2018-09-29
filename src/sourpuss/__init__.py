@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import operator
 import os
 import sys
 import typing
@@ -11,7 +12,6 @@ import pandas
 
 # TODO Handle non-DataFrame pickles
 # TODO Accept a directory and recursively dump pickles
-# TODO Convert all entries in the DataFrame into types via type(...)
 # TODO Permit sorting all rows
 
 
@@ -39,6 +39,8 @@ DEFAULT_PRECISION = 17
               help='Change precision for floating point.')
 @click.option('--query', '-q', type=str, metavar='QUERY',
               help='Show only rows satisfying a query.')
+@click.option('--types', '-t', is_flag=True,
+              help='Show the type, not the value, of each datum.')
 def main(
         file: typing.List[str],
         *,
@@ -47,7 +49,8 @@ def main(
         location: typing.Optional[bool] = None,
         multi_sparse: typing.Optional[bool] = None,
         precision: typing.Optional[int] = None,
-        query: typing.Optional[str] = None
+        query: typing.Optional[str] = None,
+        types: typing.Optional[bool] = None
 ):
     """Cat Python pickle file(s) onto standard output, especially DataFrames."""
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
@@ -59,6 +62,9 @@ def main(
                 df.insert(loc=0, column='location', value=f)
             if query is not None:
                 df = df.query(query)
+            if types:
+                df = (df.applymap(type)
+                      .applymap(operator.attrgetter('__name__')))
             if csv:
                 df.to_csv(sys.stdout, index=not no_index)
             else:
