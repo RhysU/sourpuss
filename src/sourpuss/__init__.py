@@ -89,11 +89,11 @@ def main(
                 df.insert(loc=0, column='location', value=f)
 
             # Possibly transform the index
+            for r in reset_index:
+                df = df.reset_index(level=r, drop=False)
             if append_index:
                 df = df.set_index(keys=list(append_index),
                                   append=not naturally_indexed(df))
-            for r in reset_index:
-                df = df.reset_index(level=r, drop=False)
             if sort_index:
                 df = df.sort_index(axis=0, kind='mergesort')
 
