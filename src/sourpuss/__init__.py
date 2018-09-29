@@ -22,6 +22,7 @@ import pandas
 # TODO Consider providing a describe summarizer
 # TODO Consider providing a quantiles summarizer
 # TODO Revisit some of the kid_gloves_off limits
+# TODO Naturally indexed check might consider the name
 
 
 # What types of paths can we hope to load successfully?
