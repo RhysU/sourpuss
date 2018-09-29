@@ -2,7 +2,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""Cat Python pickle file(s) onto standard output, especially DataFrames."""
+"""Cat Python pickle file(s) onto standard output, especially DataFrames.
+
+More concretely, display one or more pickle files on standard output
+allowing a host of simple transformations along the way.  Intended for
+when you're grooving on the command line and want to avoid firing
+up Jupyter/IPython.  Or maybe you like pipelines.  Or maybe you hate
+pipelines but Knuth-vs-McIlroy 1986 lives large in your memory."""
 import operator
 import os
 import sys
@@ -12,7 +18,6 @@ import click
 import pandas
 
 # TODO Handle non-DataFrame pickles
-# TODO Permit sorting all rows
 
 
 # What types of paths can we hope to load successfully?
@@ -26,6 +31,8 @@ DEFAULT_PRECISION = 17
 
 @click.command()
 @click.argument('file', nargs=-1, type=PicklePath)
+@click.option('--append-index', '-a', type=str, multiple=True,
+              help='Append named column to the index.')
 @click.option('--csv', '-c', is_flag=True,
               help='Emit CSV instead of formatted table.')
 @click.option('--location', '-l', is_flag=True,
@@ -41,13 +48,14 @@ DEFAULT_PRECISION = 17
               help='Show only rows satisfying a query.')
 @click.option('--reset-index', '-r', type=str, multiple=True,
               help='Remove named column from the index.')
-@click.option('--sort', '-s', is_flag=True,
+@click.option('--sort-index', '-s', is_flag=True,
               help='Sort according to the index.')
 @click.option('--types', '-t', is_flag=True,
               help='Show the type, not the value, of each datum.')
 def main(
         file: typing.List[str],
         *,
+        append_index: typing.Sequence[str] = None,
         csv: typing.Optional[bool] = None,
         no_index: typing.Optional[bool] = None,
         location: typing.Optional[bool] = None,
@@ -55,26 +63,32 @@ def main(
         precision: typing.Optional[int] = None,
         query: typing.Optional[str] = None,
         reset_index: typing.Sequence[str] = None,
-        sort: typing.Optional[bool] = None,
+        sort_index: typing.Optional[bool] = None,
         types: typing.Optional[bool] = None
 ):
     """Cat Python pickle file(s) onto standard output, especially DataFrames."""
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
         for f in file:
-            # Load and transform the file
+            # Load the pickle into a DataFrame
             df = pandas.read_pickle(f)
             if isinstance(df, pandas.Series):
                 df = df.to_frame()
-            if location:
-                df.insert(loc=0, column='location', value=f)
+
+            # Possibly transform the data
             if query is not None:
                 df = df.query(query)
             if types:
                 df = (df.applymap(type)
                       .applymap(operator.attrgetter('__name__')))
+            if location:
+                df.insert(loc=0, column='location', value=f)
+
+            # Possibly transform the index
+            for a in append_index:
+                df = df.set_index(a, append=True)
             for r in reset_index:
                 df = df.reset_index(level=r, drop=False)
-            if sort:
+            if sort_index:
                 df = df.sort_index(axis=0, kind='mergesort')
 
             # Emit output in the desired format
