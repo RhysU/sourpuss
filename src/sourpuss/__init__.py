@@ -32,6 +32,8 @@ DEFAULT_PRECISION = 17
               help='Emit CSV instead of formatted table.')
 @click.option('--no-index', '-n', is_flag=True,
               help='Do not display the index.')
+@click.option('--location', '-l', is_flag=True,
+              help='Prefix each row with the location of the file')
 @click.option('--multi-sparse', '-s', is_flag=True,
               help='Sparsify any MultiIndex display.')
 @click.option('--precision', '-p', type=click.IntRange(min=1, max=None),
@@ -42,6 +44,7 @@ def main(
         *,
         csv: typing.Optional[bool] = None,
         no_index: typing.Optional[bool] = None,
+        location: typing.Optional[bool] = None,
         multi_sparse: typing.Optional[bool] = None,
         precision: typing.Optional[int] = None
 ):
@@ -51,6 +54,8 @@ def main(
             df = pandas.read_pickle(f)
             if isinstance(df, pandas.Series):
                 df = df.to_frame()
+            if location:
+                df.insert(loc=0, column='location', value=f)
             if csv:
                 df.to_csv(sys.stdout, index=not no_index)
             else:
