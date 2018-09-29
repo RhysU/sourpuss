@@ -18,7 +18,7 @@ setup(name='sourpuss',
       description="Like feeding pickles to a cat(1)",
       long_description=README + '\n\n' + NEWS,
       classifiers=[
-          'Development Status :: 2 - Pre-Alpha',
+          'Development Status :: 3 - Alpha',
           'Environment :: Console',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
