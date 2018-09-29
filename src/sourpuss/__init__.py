@@ -99,11 +99,12 @@ def main(
             if sort_index:
                 df = df.sort_index(axis=0, kind='mergesort')
 
-            # Emit output in the desired format
+            # Emit output in the desired format with an index iff interesting
+            index = not (no_index or naturally_indexed(df))
             if csv:
-                df.to_csv(buffer, index=not no_index)
+                df.to_csv(buffer, index=index)
             else:
-                df.to_string(buffer, index=not no_index)
+                df.to_string(buffer, index=index)
                 if not df.empty:
                     buffer.write(os.linesep)
 
@@ -166,7 +167,8 @@ def coerce_to_df(o: typing.Any) -> pandas.DataFrame:
 # Surely there must be a better way...?
 def naturally_indexed(df: pandas.DataFrame) -> bool:
     "Is the DataFrame index indistinguishable from just numbering the rows?"""
-    return (df.index == pandas.RangeIndex(start=0, stop=len(df))).all()
+    return ((not df.index.name) and
+            (df.index == pandas.RangeIndex(start=0, stop=len(df))).all())
 
 
 if __name__ == '__main__':
