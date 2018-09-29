@@ -6,15 +6,8 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
-version = '0.2'
-
-install_requires = [
-    'click',
-    'pandas',
-]
-
 setup(name='sourpuss',
-      version=version,
+      version='0.2',
       description="Like feeding pickles to a cat(1)",
       long_description=README + '\n\n' + NEWS,
       classifiers=[
@@ -36,6 +29,10 @@ setup(name='sourpuss',
       package_dir={'': 'src'},
       include_package_data=True,
       zip_safe=False,
-      install_requires=install_requires,
+      test_suite="tests",
+      install_requires = [
+          'click',
+          'pandas',
+      ],
       entry_points={'console_scripts': ['sourpuss=sourpuss:main']},
       )
