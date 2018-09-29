@@ -10,10 +10,8 @@ import click
 import pandas
 
 # TODO Handle non-DataFrame pickles
-# TODO Add a path prefix as an index element
 # TODO Accept a directory and recursively dump pickles
 # TODO Convert all entries in the DataFrame into types via type(...)
-# TODO Accept a query string to reduce the data
 # TODO Permit sorting all rows
 
 
@@ -39,6 +37,8 @@ DEFAULT_PRECISION = 17
 @click.option('--precision', '-p', type=click.IntRange(min=1, max=None),
               show_default=True, metavar='DIGITS', default=DEFAULT_PRECISION,
               help='Change precision for floating point.')
+@click.option('--query', '-q', type=str, metavar='QUERY',
+              help='Show only rows satisfying a query.')
 def main(
         file: typing.List[str],
         *,
@@ -46,7 +46,8 @@ def main(
         no_index: typing.Optional[bool] = None,
         location: typing.Optional[bool] = None,
         multi_sparse: typing.Optional[bool] = None,
-        precision: typing.Optional[int] = None
+        precision: typing.Optional[int] = None,
+        query: typing.Optional[str] = None
 ):
     """Cat Python pickle file(s) onto standard output, especially DataFrames."""
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
@@ -56,6 +57,8 @@ def main(
                 df = df.to_frame()
             if location:
                 df.insert(loc=0, column='location', value=f)
+            if query is not None:
+                df = df.query(query)
             if csv:
                 df.to_csv(sys.stdout, index=not no_index)
             else:
