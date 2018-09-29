@@ -10,7 +10,6 @@ import click
 import pandas
 
 # TODO Handle non-DataFrame pickles
-# TODO Suppress an index
 # TODO Add a path prefix as an index element
 # TODO Accept a directory and recursively dump pickles
 # TODO Convert all entries in the DataFrame into types via type(...)
@@ -31,6 +30,8 @@ DEFAULT_PRECISION = 17
 @click.argument('file', nargs=-1, type=PicklePath)
 @click.option('--csv', '-c', is_flag=True,
               help='Emit CSV instead of formatted table.')
+@click.option('--no_index', '-n', is_flag=True,
+              help='Do not display the index.')
 @click.option('--multi_sparse', '-s', is_flag=True,
               help='Sparsify any MultiIndex display.')
 @click.option('--precision', '-p', type=int, show_default=True,
@@ -40,18 +41,20 @@ def main(
         file: typing.List[str],
         *,
         csv: typing.Optional[bool] = None,
+        no_index: typing.Optional[bool] = None,
         multi_sparse: typing.Optional[bool] = None,
         precision: typing.Optional[int] = None
 ):
     """Cat Python pickle file(s) onto standard output, especially DataFrames."""
-
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
         for f in file:
             df = pandas.read_pickle(f)
+            if isinstance(df, pandas.Series):
+                df = df.to_frame()
             if csv:
-                df.to_csv(sys.stdout)
+                df.to_csv(sys.stdout, index=not no_index)
             else:
-                df.to_string(sys.stdout)
+                df.to_string(sys.stdout, index=not no_index)
                 if not df.empty:
                     sys.stdout.write(os.linesep)
 
