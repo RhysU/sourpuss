@@ -28,12 +28,12 @@ DEFAULT_PRECISION = 17
 @click.argument('file', nargs=-1, type=PicklePath)
 @click.option('--csv', '-c', is_flag=True,
               help='Emit CSV instead of formatted table.')
-@click.option('--no-index', '-n', is_flag=True,
-              help='Do not display the index.')
 @click.option('--location', '-l', is_flag=True,
               help='Prefix each row with the location of the file')
-@click.option('--multi-sparse', '-s', is_flag=True,
+@click.option('--multi-sparse', '-m', is_flag=True,
               help='Sparsify any MultiIndex display.')
+@click.option('--no-index', '-n', is_flag=True,
+              help='Do not display the index.')
 @click.option('--precision', '-p', type=click.IntRange(min=1, max=None),
               show_default=True, metavar='DIGITS', default=DEFAULT_PRECISION,
               help='Change precision for floating point.')
