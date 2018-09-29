@@ -3,6 +3,7 @@ build
 develop-eggs
 dist
 *.egg-info
+*.eggs
 .idea
 .installed.cfg
 *.pyc
