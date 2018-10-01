@@ -17,7 +17,6 @@ import numpy
 import pandas
 
 # TODO Maintain uniform output structure on empty DataFrames
-# TODO Convert all column names to strings
 
 
 # What types of paths can we hope to load successfully?
@@ -143,6 +142,10 @@ def transform_index(
         sort_index: typing.Optional[bool] = None
 ) -> pandas.DataFrame:
     """Apply possible sequence of index transformations."""
+    # append_index and reset_index contain strings from the CLI arguments
+    # but the DataFrame may include numeric column names.  Make all strings.
+    df.columns = [str(c) for c in df.columns]
+
     for r in reset_index:
         df = df.reset_index(level=r, drop=False)
     if append_index:
@@ -150,6 +153,7 @@ def transform_index(
                           append=not naturally_indexed(df))
     if sort_index:
         df = df.sort_index(axis=0, kind='mergesort')
+
     return df
 
 

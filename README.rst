@@ -30,7 +30,7 @@ Help::
 
 Examples::
 
-    $ sourpuss ~/foo.pkl
+    $ sourpuss data_frame.pkl
                 name              city  phone-number        date
     Katherine Rivera              Pavo  540-489-5084  1973-01-18
        Katie Estrada            Antler  992-454-3547  2003-07-07
@@ -44,14 +44,23 @@ Examples::
        Justin Herman  Milleville Beach  847-845-5160  1984-11-10
 
 
-    $ sourpuss ~/foo.pkl -q 'city == "Pavo"'
+    $ sourpuss data_frame.pkl -q 'city == "Pavo"'
                 name  city  phone-number        date
     Katherine Rivera  Pavo  540-489-5084  1973-01-18
 
 
-    $ sourpuss ~/foo.pkl -a city -a name -s | head -5
+    $ sourpuss data_frame.pkl -a city -a name -s | head -5
                                        phone-number        date
     city             name
     Antler           Katie Estrada     992-454-3547  2003-07-07
     Balcones Heights Deborah Clark     871-803-9642  1978-02-07
     Bernice          Brianna Preston   489-937-8732  1970-11-28
+
+    $ sourpuss numpy_array.pkl -a 1 -s -p 6
+                      0         2         3         4
+    1
+    -0.686618 -0.309380 -0.787130  0.794882 -2.045493
+    -0.579552  0.338158 -0.269337  1.290424 -0.872747
+    -0.014240  0.333677  0.235846 -0.614426  0.222267
+     0.317477  0.407887 -0.289088 -0.231201  0.046131
+     1.307109 -0.383681  0.009120 -0.978323  0.446737
