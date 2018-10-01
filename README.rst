@@ -1,10 +1,11 @@
 Sourpuss: Like feeding pickles to a cat(1)
 ==========================================
 
-Sourpuss displays the contents of one or more Python pickle files on
-standard output.  Currently, this small utility targets pickled Pandas
-DataFrames and supports transforming them in simple ways.  By making it
-easy to answer simple questions via Unix pipelines, sourpuss lets you
+Sourpuss displays the contents of one or more Python pickle files on standard
+output.  Currently, this small utility targets pickled Pandas DataFrames
+and supports transforming them in simple ways.  Other pickled objects
+(e.g. dicts, NumPy arrays, etc.) are coerced into DataFrames.  By making
+it easy to answer simple questions via Unix pipelines, sourpuss lets you
 avoid constantly context switching between $SHELL and Jupyter/IPython.
 
 Help::
@@ -30,22 +31,22 @@ Help::
 Examples::
 
     $ sourpuss ~/foo.pkl
-                   name              city  phone-number        date
-    0  Katherine Rivera              Pavo  540-489-5084  1973-01-18
-    1     Katie Estrada            Antler  992-454-3547  2003-07-07
-    2      Scott Harris        Colesville  665-552-3378  1989-01-01
-    3    Anthony Flores         Round Oak  437-057-2113  1975-01-27
-    4     Deborah Clark  Balcones Heights  871-803-9642  1978-02-07
-    5      Andrea Owens            Lucile  308-267-6029  2018-01-05
-    6    Kimberly Myers       Holly Ridge  906-150-0581  2002-02-26
-    7  Katherine Garner       Dalton City  687-950-3807  1984-06-16
-    8   Brianna Preston           Bernice  489-937-8732  1970-11-28
-    9     Justin Herman  Milleville Beach  847-845-5160  1984-11-10
+                name              city  phone-number        date
+    Katherine Rivera              Pavo  540-489-5084  1973-01-18
+       Katie Estrada            Antler  992-454-3547  2003-07-07
+        Scott Harris        Colesville  665-552-3378  1989-01-01
+      Anthony Flores         Round Oak  437-057-2113  1975-01-27
+       Deborah Clark  Balcones Heights  871-803-9642  1978-02-07
+        Andrea Owens            Lucile  308-267-6029  2018-01-05
+      Kimberly Myers       Holly Ridge  906-150-0581  2002-02-26
+    Katherine Garner       Dalton City  687-950-3807  1984-06-16
+     Brianna Preston           Bernice  489-937-8732  1970-11-28
+       Justin Herman  Milleville Beach  847-845-5160  1984-11-10
 
 
     $ sourpuss ~/foo.pkl -q 'city == "Pavo"'
-                   name  city  phone-number        date
-    0  Katherine Rivera  Pavo  540-489-5084  1973-01-18
+                name  city  phone-number        date
+    Katherine Rivera  Pavo  540-489-5084  1973-01-18
 
 
     $ sourpuss ~/foo.pkl -a city -a name -s | head -5
