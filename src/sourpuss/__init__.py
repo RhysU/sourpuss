@@ -17,10 +17,6 @@ import numpy
 import pandas
 
 # TODO Maintain uniform output structure on empty DataFrames
-# TODO Consider providing a describe summarizer
-# TODO Consider providing a quantiles summarizer
-# TODO Revisit some of the kid_gloves_off limits
-# TODO Naturally indexed check might consider the name
 # TODO Convert all column names to strings
 
 
