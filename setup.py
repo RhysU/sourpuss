@@ -7,11 +7,11 @@ README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 setup(name='sourpuss',
-      version='0.3',
+      version='0.4',
       description="Like feeding pickles to a cat(1)",
       long_description=README + '\n\n' + NEWS,
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 4 - Beta',
           'Environment :: Console',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
