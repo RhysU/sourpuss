@@ -1,5 +1,14 @@
 News
 ====
+0.3
+---
+
+*Release date: 1-Oct-2018*
+
+* More uniform output on empty dataframes
+* Coerce columns to strings to allow append/reset of numeric
+* Removed lingering TODOs
+
 0.2
 ---
 
