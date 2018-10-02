@@ -16,9 +16,6 @@ import click
 import numpy
 import pandas
 
-# TODO Maintain uniform output structure on empty DataFrames
-
-
 # What types of paths can we hope to load successfully?
 PicklePath = click.Path(exists=True, file_okay=True, dir_okay=False,
                         writable=False, readable=True, resolve_path=False,
@@ -178,12 +175,19 @@ def emit_output(
 
     with kid_gloves_off(multi_sparse=multi_sparse, precision=precision):
         index = not (no_index or naturally_indexed(df))
-        if csv:
+
+        if csv:  # Properly handles many edge cases
             df.to_csv(buffer, index=index)
-        else:
+
+        elif df.empty:  # Avoid "Empty DataFrame..." message from to_string(...)
+            header = []
+            header.extend(df.index.names if index else ())
+            header.extend(df.columns)
+            print(*header, sep=' ', end=os.linesep, file=buffer)
+
+        else:  # Default to_string(...) lacks a trailing newline w/ buffer
             df.to_string(buffer, index=index)
-            if not df.empty:
-                buffer.write(os.linesep)
+            buffer.write(os.linesep)
 
 
 def kid_gloves_off(
