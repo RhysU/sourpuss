@@ -16,6 +16,8 @@ import click
 import numpy
 import pandas
 
+# TODO Round-trip options to the Pandas CSV routines
+
 # What types of paths can we hope to load successfully?
 PicklePath = click.Path(exists=True, file_okay=True, dir_okay=False,
                         writable=False, readable=True, resolve_path=False,
