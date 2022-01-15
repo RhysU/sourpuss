@@ -1,6 +1,10 @@
 Sourpuss: Like feeding pickles to a cat(1)
 ==========================================
 
+|BuildStatus|_
+.. |BuildStatus| image:: https://app.travis-ci.com/RhysU/sourpuss.svg?branch=master
+.. _BuildStatus: https://app.travis-ci.com/RhysU/sourpuss
+
 Sourpuss displays the contents of one or more Python pickle files on standard
 output.  Currently, this small utility targets pickled Pandas DataFrames
 and supports transforming them in simple ways.  Other pickled objects
