@@ -1,11 +1,15 @@
 Release HOWTO
 =============
 
-To make a release, 
+An overly painful process for releasing:
 
-  1) Update release date/version in NEWS.txt and setup.py
-  2) Run 'python setup.py sdist'
-  3) Test the generated source distribution in dist/
-  4) Upload to PyPI: 'python setup.py sdist register upload'
-  5) Increase version in setup.py (for next release)
+  1) Green?  https://app.circleci.com/projects/github/RhysU/sourpuss
+  2) Use `git tag -l` to determine which tag comes next
+  3) In NEWS.txt, add date/revisions under a new section matching that tag.
+  4) Commit NEWS.txt
+  5) Create a new annotated git tag and push it with `git push origin --tags`
+  6) Make sure that tag went green on Circle-CI
+  7) Entirely remove the dist/ folder to avoid stake wheels
+  8) Build a wheel following the steps listed in .circleci/config.yml
+  9) Install twine with `python -m pip install twine`
 

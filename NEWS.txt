@@ -1,5 +1,13 @@
 News
 ====
+0.4
+---
+*Release date: 4-Jan-2026*
+
+* Moved to pyproject.toml for build
+* Bugfix for outputting dicts with newer NumPy versions
+* Moved to Circle-CI from Travis
+
 0.3
 ---
 
