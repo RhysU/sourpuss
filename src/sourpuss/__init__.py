@@ -107,8 +107,10 @@ def coerce_to_df(o: typing.Any) -> pandas.DataFrame:
         except AttributeError:
             pass
 
-        # Coerce anything into a NumPy array
-        o = numpy.asanyarray(o)
+        # Coerce anything into a NumPy array:
+        #   1) asanyarray accepts more inputs with dtype="object"
+        #   2) avoid needlessly coercing non-object dtypes into objects
+        o = numpy.asanyarray(o, dtype=getattr(o, "dtype", "object"))
 
         # NumPy arrays turn nicely into DataFrames
         return pandas.DataFrame(o)
