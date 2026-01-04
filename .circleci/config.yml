@@ -1,0 +1,37 @@
+# See https://circleci.com/docs/2.0/reusing-config/
+version: 2.1
+
+executors:
+  python-docker:
+    parameters:
+      version:
+        description: "Python version"
+        default: "3.9"
+        type: string
+    docker:
+      - image: cimg/python:<<parameters.version>>
+
+jobs:
+  test:
+    parameters:
+      version:
+        description: "Python version"
+        default: "3.9"
+        type: string
+    executor:
+      name: python-docker
+      version: <<parameters.version>>
+    steps:
+      - checkout
+      - run: python setup.py test
+      - run: python setup.py develop
+      - run: python setup.py install
+      - run: sourpuss --help
+
+workflows:
+  matrix-tests:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+                - "3.9"
